@@ -133,7 +133,6 @@ class Obstacle:
       
     def draw(self, Screen):
         Screen.blit(self.image[self.type], (self.rect))
-        pygame.draw.rect(Screen, (255, 0, 0), self.rect, 2)
 
 class SmallCactus(Obstacle):
       def __init__(self, image):
@@ -254,5 +253,6 @@ def menu(death_Count):
                         sys.exit() # This line provides completely close the game. 
                   if event.type == pygame.KEYDOWN:
                         main()
+
 
 menu(death_Count = 0)
