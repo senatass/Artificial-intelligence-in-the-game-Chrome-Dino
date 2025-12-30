@@ -211,7 +211,7 @@ def eval_genomes(genomes, config):
     clock = pygame.time.Clock()
     clouds = Clouds()
     font = pygame.font.Font('freesansbold.ttf', 24)
-           
+
     def Score():
         global Points, game_Speed
         Points += 1
@@ -227,6 +227,98 @@ def eval_genomes(genomes, config):
         textRect = text.get_rect()
         textRect.center = (1000, 40)
         Screen.blit(text, textRect)
+
+    def BackGround():
+        global x_Position_Background, y_Position_Background
+        image_Width = Background.get_width()
+        Screen.blit(Background, (x_Position_Background, y_Position_Background))
+        Screen.blit(Background, (image_Width + x_Position_Background, y_Position_Background))
+        if x_Position_Background <= -image_Width:
+            Screen.blit(Background, (image_Width + x_Position_Background, y_Position_Background))
+            x_Position_Background = 0
+        x_Position_Background -= game_Speed
+
+    run = True
+    while run and len(dinos) > 0:  # When all the dinosaurs die, the generation ends.
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+                pygame.quit()
+                sys.exit()
+
+        Screen.fill((255, 255, 255))
+
+        # A new obstacle is constantly created.
+        if len(obstacles) == 0:
+            choice = random.randint(0, 2)
+            if choice == 0:
+                obstacles.append(SmallCactus(Small_Cactus))
+            elif choice == 1:
+                obstacles.append(LargeCactus(Large_Cactus))
+            else:
+                obstacles.append(Birds(Bird))
+
+        # Nearest obstacle.
+        obstacle = obstacles[0]
+
+        # Allows decision making.
+        for i, dino in enumerate(dinos):
+            # Inputs.
+            dino_y = dino.dino_rect.y
+            distance_x = obstacle.rect.x - dino.dino_rect.x
+            obs_height = obstacle.rect.height
+            obs_width = obstacle.rect.width
+            speed = game_Speed
+
+            # TThe decision taken with NEAT is taken into action.
+            output = nets[i].activate((dino_y, distance_x, obs_height, obs_width, speed))
+
+            # AI mimics keyboard input.
+            userInput = {
+                pygame.K_UP: False,
+                pygame.K_DOWN: False,
+                pygame.K_SPACE: False
+            }
+
+            # Outputs.
+            if output[0] > 0.5:   # Zıpla
+                userInput[pygame.K_UP] = True
+                userInput[pygame.K_SPACE] = True
+            elif output[1] > 0.5: # Eğil
+                userInput[pygame.K_DOWN] = True
+
+            dino.update(userInput)
+            dino.draw(Screen)
+
+        # Updates and draws obstacles.
+        for obstacle in obstacles[:]:
+            obstacle.update()
+            obstacle.draw(Screen)
+
+            # Finds crashing dinosaurs.
+            dead_indices = []
+            for i, dino in enumerate(dinos):
+                if dino.dino_rect.colliderect(obstacle.rect):
+                    ge[i].fitness -= 1  # gets punished when hit.
+                    dead_indices.append(i)
+
+            # Removes crashing dinosaurs from the list.
+            for idx in sorted(dead_indices, reverse=True):
+                dinos.pop(idx)
+                nets.pop(idx)
+                ge.pop(idx)
+
+            # If the obstacle goes off the screen, it will be deleted from the list.
+            if obstacle.rect.x < -obstacle.rect.width and obstacle in obstacles:
+                obstacles.remove(obstacle)
+
+        BackGround()
+        clouds.draw(Screen)
+        clouds.update()
+        Score()
+ 
+        pygame.display.update()
+        clock.tick(30)
 
 def main ():
     run = True
@@ -324,4 +416,5 @@ def menu(death_Count):
 
 
 menu(death_Count = 0)
+
 
