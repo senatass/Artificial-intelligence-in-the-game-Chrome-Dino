@@ -185,6 +185,49 @@ def eval_genomes(genomes, config):
     clock = pygame.time.Clock()
     clouds = Clouds()
     font = pygame.font.Font('freesansbold.ttf', 24)
+    def eval_genomes(genomes, config):
+
+    # NEAT is invoked for each generation.
+    global game_Speed, x_Position_Background, y_Position_Background, Points, obstacles
+
+    # Resets the game for each generation.
+    game_Speed = 14
+    x_Position_Background = 0
+    y_Position_Background = 380
+    Points = 0
+    obstacles = []
+
+    nets = []   # Neural network for each dinosaur.
+    ge = []     # Where we record the dinosaur's performance score.
+    dinos = []  # The dinosaur objects that appear on screen.
+
+    for genome_id, genome in genomes:
+        genome.fitness = 0  # beginning points.
+        net = neat.nn.FeedForwardNetwork.create(genome, config)
+        nets.append(net)
+        ge.append(genome)
+        dinos.append(Dinosaur())
+
+    clock = pygame.time.Clock()
+    clouds = Clouds()
+    font = pygame.font.Font('freesansbold.ttf', 24)
+           
+    def Score():
+        global Points, game_Speed
+        Points += 1
+
+        # Give a reward to each surviving dinosaur.
+        for g in ge:
+            g.fitness += 0.1
+
+        if Points % 100 == 0:
+            game_Speed += 1
+
+        text = font.render("Points: " + str(Points), True, (0, 0, 0))
+        textRect = text.get_rect()
+        textRect.center = (1000, 40)
+        Screen.blit(text, textRect)
+
 def main ():
     run = True
     clock = pygame.time.Clock()
@@ -281,3 +324,4 @@ def menu(death_Count):
 
 
 menu(death_Count = 0)
+
