@@ -159,7 +159,32 @@ class Birds(Obstacle):
                   self.index = 0     
             Screen.blit(self.image[self.index // 5], self.rect)
             self.index += 1
-            
+                 
+def eval_genomes(genomes, config):
+    # NEAT is invoked for each generation.
+    global game_Speed, x_Position_Background, y_Position_Background, Points, obstacles
+
+    # Resets the game for each generation.
+    game_Speed = 14
+    x_Position_Background = 0
+    y_Position_Background = 380
+    Points = 0
+    obstacles = []
+
+    nets = []   # Neural network for each dinosaur.
+    ge = []     # Where we record the dinosaur's performance score.
+    dinos = []  # The dinosaur objects that appear on screen.
+
+    for genome_id, genome in genomes:
+        genome.fitness = 0  # beginning points.
+        net = neat.nn.FeedForwardNetwork.create(genome, config)
+        nets.append(net)
+        ge.append(genome)
+        dinos.append(Dinosaur())
+
+    clock = pygame.time.Clock()
+    clouds = Clouds()
+    font = pygame.font.Font('freesansbold.ttf', 24)
 def main ():
     run = True
     clock = pygame.time.Clock()
@@ -253,5 +278,6 @@ def menu(death_Count):
                         sys.exit() # This line provides completely close the game. 
                   if event.type == pygame.KEYDOWN:
                         main()
+
 
 menu(death_Count = 0)
