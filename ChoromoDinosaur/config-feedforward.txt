@@ -1,0 +1,206 @@
+[NEAT]
+fitness_criterion = max
+# Here, in the answer to the question which fitness value should I look at to understand the generation's status? max is used.
+# max means in each generation, I take the best individual as the reference.
+
+fitness_threshold = 2000.0
+# At this point, the program can be stopped. The learning process can stop.
+
+
+pop_size = 150
+# How many candidate dinos are there in each generation? 150.
+# I also thought about increasing it, but I kept it at this number because it would put too much load on the computer.
+
+reset_on_extinction = False
+# If all species go extinct, what should I do?
+# Here, this is the operation we are deciding. If everything disappears, should I reset/delete?
+# I set it to false because even in that case there is still data, and I don't want to lose that data.
+
+no_fitness_termination = False
+# When it's False: training can stop if it reaches the fitness_threshold.
+# If it were True: even if it reached the threshold, it would not stop and would continue.
+
+
+[DefaultGenome]
+activation_default = tanh
+# Default activation for each node is tanh
+# tanh is generally stable outputs are between -1 and +1. I saw tanh being used on the internet.
+
+activation_mutate_rate = 0.0
+# Should the activation function change? No 
+
+# I thought changing this would not be very efficient for our project and would also make things complicated.
+# So a node will never become something like "relu"; it will always stay tanh. 
+
+activation_options = tanh
+# If it could change, which list would it choose from? Here there is already only one option.
+
+aggregation_default = sum
+# If a node receives more than one input, how should they be combined? By summing.
+
+aggregation_mutate_rate = 0.0
+# Do not change this combining rule with mutation. If I changed this, everything would change too much
+# and I thought it's not necessary; I want the main learning to happen through the weights.
+
+aggregation_options = sum
+# Options list, again only sum.
+
+bias_init_mean = 0.0
+# At the beginning bias values should start around an average close to 0.
+
+bias_init_stdev = 1.0
+# How spread out should the bias distribution be? 1.0  normal level of spread.
+
+bias_max_value = 30.0
+# Bias should be at most 30; do not go above it. Going too far above is not practical.
+
+bias_min_value = -30.0
+# Bias should be at least -30 do not go below it.
+
+bias_mutate_power = 0.5
+# If bias changes, let the step size be around 0.5.
+# If you make it bigger, it changes more aggressively; if smaller, it fine-tunes more.
+
+bias_mutate_rate = 0.7
+# Bias mutation should be frequent (0.7 is quite high). I red that this rate is very good for this type of two output problems
+
+bias_replace_rate = 0.1
+# Sometimes, instead of slightly changing bias, pick a completely new random one (about 10%).
+
+compatibility_disjoint_coefficient = 1.0
+# In the species distance, how important are "I have it, you don't" type connection differences?
+
+compatibility_weight_coefficient = 0.5
+# If the same connection exists but the weights are different: how much should that matter?
+
+conn_add_prob = 0.3
+# Probability of adding a new connection. Medium level.
+
+conn_delete_prob = 0.1
+# Probability of deleting an existing connection. Lower.
+
+enabled_default = True
+# Connections should start enabled.
+
+enabled_mutate_rate = 0.01
+# Flipping a connection enable/disable should be rare (like 1%).
+
+feed_forward = True
+# The network should be feed-forward only; no loops (no recurrent).
+# This usually gives more stable behavior in the dino game.
+
+initial_connection = full_direct
+# At the beginning, start fully connected from input -> output.
+# A good start when there is no hidden layer.
+
+node_add_prob = 0.1
+# Probability of adding a new node. The network can grow over time.
+
+node_delete_prob = 0.05
+# Probability of deleting a node. The network can sometimes become simpler.
+
+num_hidden = 0
+# Initially there are no hidden nodes.
+
+num_inputs = 5
+# How many state values do you feed into the model? 5.
+
+num_outputs = 2
+# How many actions should the model output? 2. (Example: jump / duck).
+# I saw some models on the internet has 3 output such us:  bend,jump, dont change . In my opinion my model results are good for this project
+# as a result i don't change this
+
+response_init_mean = 1.0
+# Response parameter starts at 1.0.
+
+response_init_stdev = 0.0
+# Standard deviation 0 -> they all start exactly at 1.0 (so it stays constant).
+
+response_max_value = 30.0
+# Upper limit.
+
+response_min_value = -30.0
+# Lower limit.
+
+response_mutate_power = 0.0
+# Change step is 0 -> it will not change.
+
+response_mutate_rate = 0.0
+
+response_replace_rate = 0.0
+# Replace probability is 0 -> response is never reassigned.
+
+weight_init_mean = 0.0
+
+weight_init_stdev = 1.0
+# Weight spread is 1.0 (standard).
+
+weight_max_value = 30
+# Weight upper limit.
+
+weight_min_value = -30
+# Weight lower limit
+
+weight_mutate_power = 0.5
+# When weights change, step size is around 0.5.
+
+weight_mutate_rate = 0.8
+# Weights should mutate very frequently.
+# As i mention, i resaerch on the internet and i found that update weights are more beneficial for this type of problems
+# for this reason  weight mutate rate is very high when compared others.
+
+weight_replace_rate = 0.1
+# Sometimes, pick a completely new random weight.
+
+single_structural_mutation = false
+# False: in one generation, there can be multiple structural changes (node/conn).
+# I wanna mention that, this is more beneficial for this question.
+# If it were True: it would usually be limited to a single structural move.
+
+bias_init_type = gaussian
+# Bias distribution is gaussian (normal distribution).
+# I saw that internet and the result isn't bad.
+
+response_init_type = gaussian
+# Response distribution is gaussian (but constant because stdev is 0).
+
+weight_init_type = gaussian
+# Weight distribution is gaussian.
+
+enabled_rate_to_true_add = 0.0
+
+
+enabled_rate_to_false_add = 0.0
+
+
+structural_mutation_surer = default
+# Structural mutation strategy: the library default.
+
+
+[DefaultSpeciesSet]
+compatibility_threshold = 3.0
+# Threshold for separating species. If smaller, there will be more species; if larger, fewer species.
+
+
+[DefaultStagnation]
+species_fitness_func = max
+# How to measure a species' fitness? Look at its best individual (max).
+# The dinosor which is lived more than other dinosors contain more suitible information when compared with other dinosors which was die very fast
+max_stagnation = 20
+# If there is no improvement for 20 generations, that species can be considered "stuck".
+
+species_elitism = 2
+# In my opinion, 2 is very good because these dinosrs have valubele information.
+# if it is 0 it is not good for this problem because when all dinosor died we will loss all valuable information
+
+
+[DefaultReproduction]
+elitism = 2
+# In each species, copy the best 2 individuals directly (so quality doesn't drop).
+
+survival_threshold = 0.2
+# Only the best 20% can be parents (the others cannot reproduce).
+# I saw this values in the internet and lots of people who solved this problem stated that this rate is very good for dino game.
+
+
+min_species_size = 1
