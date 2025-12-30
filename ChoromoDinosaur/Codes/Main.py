@@ -392,6 +392,34 @@ def main ():
 
         clock.tick(30) # 30 frame / fps.
         pygame.display.update()
+               
+def run_neat(config_path,resume_from_checkpoint=None):
+
+    # NEAT starts.
+    config = neat.Config(
+        neat.DefaultGenome,
+        neat.DefaultReproduction,
+        neat.DefaultSpeciesSet,
+        neat.DefaultStagnation,
+        config_path
+    )
+    if resume_from_checkpoint is None:
+        population = neat.Population(config)
+    # Used to contınue from checkpoint.
+    else:
+        population = neat.Checkpointer.restore_checkpoint(resume_from_checkpoint)
+
+    # Saves progress.
+    population.add_reporter(neat.Checkpointer(10, filename_prefix="neat-checkpoint-")) 
+
+    # Shows statistics.
+    population.add_reporter(neat.StdOutReporter(True))
+    stats = neat.StatisticsReporter()
+    population.add_reporter(stats)
+
+    # It goes up to 1000 generations.
+    winner = population.run(eval_genomes, 1000)
+    print(winner)
 
 def menu(death_Count):
       global Points
@@ -416,5 +444,6 @@ def menu(death_Count):
 
 
 menu(death_Count = 0)
+
 
 
